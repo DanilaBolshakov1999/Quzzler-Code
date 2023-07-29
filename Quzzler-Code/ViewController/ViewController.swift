@@ -63,7 +63,7 @@ final class ViewController: UIViewController {
         return element
     }()
     
-    private lazy var threeButton: UIButton = {
+    private lazy var thirdButton: UIButton = {
         let element = UIButton(type: .system)
         element.titleLabel?.font = .systemFont(ofSize: 25)
         element.tintColor = .white
@@ -74,20 +74,23 @@ final class ViewController: UIViewController {
     
     private lazy var progressBar: UIProgressView = {
         let label = UIProgressView()
-        label.progress = 0.5
         label.trackTintColor = .white
         label.progressTintColor = UIColor(red: 1.00, green: 0.46, blue: 0.66, alpha: 1.0)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-   
+    //MARK: - Private Properties
+    var quizBrain = QuestionBrain()
+    let delayTime = 0.3
+    var timer = Timer()
     
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setView()
         setConstraints()
+        updateUI()
     }
     
     //MARK: - Private Methods
@@ -99,7 +102,7 @@ final class ViewController: UIViewController {
         stackView.addArrangedSubview(questionLabel)
         stackView.addArrangedSubview(firstButton)
         stackView.addArrangedSubview(secondButton)
-        stackView.addArrangedSubview(threeButton)
+        stackView.addArrangedSubview(thirdButton)
         stackView.addArrangedSubview(progressBar)
         
         scoreLabel.text = "Score 0"
@@ -108,9 +111,44 @@ final class ViewController: UIViewController {
         organ in the human
         body?
         """
+        
         firstButton.setTitle("Heart", for: .normal)
+        firstButton.addTarget(self, action: #selector(answerButtonPressed), for: .touchUpInside)
+        
         secondButton.setTitle("Skin", for: .normal)
-        threeButton.setTitle("Large Intestine", for: .normal)
+        secondButton.addTarget(self, action: #selector(answerButtonPressed), for: .touchUpInside)
+        
+        thirdButton.setTitle("Large Intestine", for: .normal)
+        thirdButton.addTarget(self, action: #selector(answerButtonPressed), for: .touchUpInside)
+        
+        firstButton.layer.cornerRadius = 20
+        secondButton.layer.cornerRadius = 20
+        thirdButton.layer.cornerRadius = 20
+    }
+    
+    @objc private func answerButtonPressed(_ sender: UIButton) {
+        guard let userAnswer = sender.currentTitle else {
+            print("Current Title Error")
+            return
+        }
+        let check = quizBrain.checkAnswer(userAnswer)
+        sender.backgroundColor = check ? .green : .red
+        quizBrain.nextQuestion()
+        timer = Timer(timeInterval: delayTime, target: self, selector: #selector(updateUI), userInfo: nil, repeats: false)
+    }
+    
+    @objc private func updateUI() {
+        questionLabel.text = quizBrain.getQuestionText
+        progressBar.setProgress(quizBrain.progress, animated: true)
+        scoreLabel.text = "Score: \(quizBrain.getScore())"
+        
+        firstButton.setTitle(quizBrain.getAnswer()[0], for: .normal)
+        secondButton.setTitle(quizBrain.getAnswer()[1], for: .normal)
+        thirdButton.setTitle(quizBrain.getAnswer()[2], for: .normal)
+        
+        firstButton.backgroundColor = .clear
+        secondButton.backgroundColor = .clear
+        thirdButton.backgroundColor = .clear
     }
 }
 
@@ -131,7 +169,7 @@ extension ViewController {
             
             firstButton.heightAnchor.constraint(equalToConstant: 80),
             secondButton.heightAnchor.constraint(equalToConstant: 80),
-            threeButton.heightAnchor.constraint(equalToConstant: 80),
+            thirdButton.heightAnchor.constraint(equalToConstant: 80),
             progressBar.heightAnchor.constraint(equalToConstant: 10)
         ])
     }
