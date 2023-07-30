@@ -105,7 +105,7 @@ final class ViewController: UIViewController {
         stackView.addArrangedSubview(thirdButton)
         stackView.addArrangedSubview(progressBar)
         
-        scoreLabel.text = "Score 0"
+        scoreLabel.text = "Score: "
         questionLabel.text = """
         Which is the largest
         organ in the human
@@ -134,7 +134,7 @@ final class ViewController: UIViewController {
         let check = quizBrain.checkAnswer(userAnswer)
         sender.backgroundColor = check ? .green : .red
         quizBrain.nextQuestion()
-        timer = Timer(timeInterval: delayTime, target: self, selector: #selector(updateUI), userInfo: nil, repeats: false)
+        timer = Timer.scheduledTimer(timeInterval: delayTime, target: self, selector: #selector(updateUI), userInfo: nil, repeats: false)
     }
     
     @objc private func updateUI() {

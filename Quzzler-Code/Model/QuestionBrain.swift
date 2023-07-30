@@ -42,8 +42,8 @@ struct QuestionBrain {
                  correctAnswer: "Australia")
     ]
     
-    var questionNumber = 0
-    var score = 0
+    private var questionNumber = 0
+    private var score = 0
     
     var getQuestionText: String {
         return quiz[questionNumber].text
@@ -61,6 +61,10 @@ struct QuestionBrain {
         return quiz[questionNumber].question
     }
     
+    func getRightAnswer() -> String {
+        return quiz[questionNumber].correctAnswer
+    }
+    
     mutating func checkAnswer(_ userAnswer: String) -> Bool {
         if userAnswer == quiz[questionNumber].correctAnswer {
             score += 1
@@ -71,7 +75,7 @@ struct QuestionBrain {
     }
     
     mutating func nextQuestion() {
-        if questionNumber > quiz.count - 1 {
+        if questionNumber < quiz.count - 1 {
             questionNumber += 1
         } else {
             score = 0
